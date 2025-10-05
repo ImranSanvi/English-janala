@@ -3,14 +3,19 @@
 const loadLesson = () => {
     fetch("https://openapi.programming-hero.com/api/levels/all")
     .then( (response) => response.json())
-    .then( (json) => displayLesson(json.data));
+    .then( (json) =>  displayLesson(json.data));
 };
 
 const loadLevelWord = (id)=>{
     const url = `https://openapi.programming-hero.com/api/level/${id}`
     fetch(url)
     .then( (response => response.json()))
-    .then(res => displayWord(res.data));
+    .then(res =>{
+        removeActive();
+        const lessonBtn = document.getElementById(`lesson-btn-${id}`)
+        lessonBtn.classList.add("active");
+        displayWord(res.data)
+    });
 }
 
 const displayWord = (allWord)=>{
@@ -51,6 +56,11 @@ const displayWord = (allWord)=>{
     
 }
 
+const removeActive= ()=>{
+    const lessonBtn = document.querySelectorAll('.lesson-btn')
+    lessonBtn.forEach( (btn) => btn.classList.remove("active"))
+}
+
 const displayLesson = (lesson) => {
     const levelContainer = document.getElementById('level-container');
     levelContainer.innerHTML = "";
@@ -58,7 +68,7 @@ const displayLesson = (lesson) => {
     lesson.forEach(element => {
         const btnDiv = document.createElement('div');
         btnDiv.innerHTML= `
-            <button onclick="loadLevelWord(${element.level_no})" type="button" class="hover:bg-blue-400 flex justify-center items-center gap-2 border-2 border-[#422AD5] px-2 py-1 rounded-[4px]"><img src="./assets/fa-book-open.png" alt=""><span class="font-semibold text-[14px] text-[#422AD5]">Lesson -${element.level_no}</span></button>
+            <button id="lesson-btn-${element.level_no}" onclick="loadLevelWord(${element.level_no})" type="button" class="lesson-btn hover:bg-blue-400 flex justify-center items-center gap-2 border-2 border-[#422AD5] px-2 py-1 rounded-[4px]"><img class="btn-primary" src="./assets/fa-book-open.png" alt=""><span class="font-semibold text-[14px] btn-primary">Lesson -${element.level_no}</span></button>
         `
         levelContainer.appendChild(btnDiv);
     });

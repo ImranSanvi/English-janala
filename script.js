@@ -122,4 +122,17 @@ const manageSpinner = (status) =>{
 loadLesson();
 
 
-// my_modal_1.showModal()
+document.getElementById("btn-search").addEventListener("click", (event)=>{
+    removeActive();
+    const input = document.getElementById("input-search");
+    const searchValue = input.value.trim().toLowerCase();
+    console.log(searchValue);
+
+    fetch("https://openapi.programming-hero.com/api/words/all")
+    .then( (response) => response.json())
+    .then( (element) => {
+        const allWords = element.data
+        const filterWords = allWords.filter((data) => data.word.toLowerCase().includes(searchValue));
+        displayWord(filterWords);
+    })
+});

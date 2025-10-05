@@ -7,6 +7,7 @@ const loadLesson = () => {
 };
 
 const loadLevelWord = (id)=>{
+    manageSpinner(true);
     const url = `https://openapi.programming-hero.com/api/level/${id}`
     fetch(url)
     .then( (response => response.json()))
@@ -16,6 +17,34 @@ const loadLevelWord = (id)=>{
         lessonBtn.classList.add("active");
         displayWord(res.data)
     });
+}
+
+const loadWordDetail = async(id) =>{
+    const url = `https://openapi.programming-hero.com/api/word/${id}`;
+    const res = await fetch(url)
+    const details = await res.json()
+    displayWordDetails(details.data)
+}
+
+const displayWordDetails = (word) =>{
+    const detailsBox = document.getElementById("details-container")
+    detailsBox.innerHTML = `
+        <div class="p-5 border-1 border-green-300 p-4 rounded-[5px] shadow-lg">
+            <h2 class="font-semibold text-[36px]">${word.word} (<i class="fa-solid fa-microphone-lines"></i>:${word.pronunciation})</h2>
+            <h4 class="font-semibold text-[24px] mt-3">Meaning</h4>
+            <p class="font-medium text-[24px] mt-2">${word.meaning}</p>
+            <h4 class="font-semibold text-[24px] mt-3">Example</h4>
+            <p class="text-[24px] mt-2">${word.sentence}</p>
+            <h4 class="font-medium text-[24px] mt-2">সমার্থক শব্দ গুলো</h4>
+            <div class="button flex gap-5 mt-2">
+                ${word.synonyms
+                .map(syn => `<button class="btn btn-active btn-accent">${syn}</button>`)
+                .join('')}
+            </div>
+
+        </div>  
+    `
+    document.getElementById("my_modal_5").showModal();
 }
 
 const displayWord = (allWord)=>{
@@ -30,6 +59,8 @@ const displayWord = (allWord)=>{
                 <h2 class="font-bangla font-medium text-[35px] text-[#292524]">নেক্সট Lesson এ যান</h2>
             </div>
         `
+        manageSpinner(false);
+        return;
     }
 
     else{
@@ -44,13 +75,14 @@ const displayWord = (allWord)=>{
                         <h3 class="font-semibold text-[32px]">${element.meaning ? element.meaning: "meaning not found"} / ${element.pronunciation ? element.pronunciation : "pronunciation not found"}</h3>
                     </div>
                     <div class="flex justify-between">
-                        <button class="bg-[#1A91FF]/10 hover:bg-[#1A91FF] w-[56px] h-[56px] rounded-[5px] flex items-center justify-center"><img src="./assets/fa-circle-question.png" alt=""></button>
+                        <button onclick="loadWordDetail(${element.id})" class="bg-[#1A91FF]/10 hover:bg-[#1A91FF] w-[56px] h-[56px] rounded-[5px] flex items-center justify-center"><img src="./assets/fa-circle-question.png" alt=""></button>
                         <button class="bg-[#1A91FF]/10 hover:bg-[#1A91FF] w-[56px] h-[56px] rounded-[5px] flex items-center justify-center"><i class="fa-solid fa-volume-high"></i></button>
                     </div>
                 </div>
             `
             wordContainer.appendChild(wordDiv)
         });
+        manageSpinner(false);
     }
         
     
@@ -74,4 +106,20 @@ const displayLesson = (lesson) => {
     });
 }
 
+const manageSpinner = (status) =>{
+    if(status == true){
+        document.getElementById("spinner").classList.remove("hidden");
+        document.getElementById("word-card-container").classList.add("hidden");
+    }
+    else{
+        document.getElementById("word-card-container").classList.remove("hidden");
+        document.getElementById("spinner").classList.add("hidden");
+    }
+}
+
+
+
 loadLesson();
+
+
+// my_modal_1.showModal()
